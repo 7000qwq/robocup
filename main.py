@@ -59,6 +59,7 @@ def face_registration(cut, new_name):
     headers = {'content-type': 'application/json'}
     response = requests.post(request_url, data=newparams, headers=headers)
     if response:
+        print(response.json())
         return response.json()
 
 def face_detect(pic):
@@ -93,16 +94,40 @@ def piant_individual(individual, frame):
     return frame
 
 
-img_path =r"C:/Users/7000qwq/Desktop/Image6.jpg"
-img = cv2.imread(img_path)
-facenum = 0
-mode = input('输入0录入人脸 输入1检测人脸\n')
 
-if mode == '0':
-    new_name = input('请输入人名\n')
+def getPhoto_one():
+    path_photo = 'C:/Users/7000qwq/Desktop/testimage/re' # 所有photo所在的文件夹目录
+    #
+    files_list = os.listdir(path_photo) # 得到文件夹下的所有文件名称，存在字符串列表中
+    #
+    print(files_list) # 打印path_photo文件夹下的所有文件
+    return files_list
+
+def getPhoto_two():
+    path_photo = 'C:/Users/7000qwq/Desktop/testimage/de' # 所有photo所在的文件夹目录
+    #
+    files_list = os.listdir(path_photo) # 得到文件夹下的所有文件名称，存在字符串列表中
+    #
+    print(files_list) # 打印path_photo文件夹下的所有文件
+    return files_list
+
+
+
+#  if __name__ == '__main__':       #这句话是为了在别的py程序import的时候不执行
+
+
+relist = getPhoto_one()
+for picpa in relist:
+    path = r"C:\\Users\\7000qwq\\Desktop\\testimage\\re\\" + picpa
+    img = cv2.imread(path)
+    new_name = picpa[:-4]
     face_registration(img, new_name)
 
-if mode == '1':
+
+telist = getPhoto_two()
+for picpa in telist:
+    path = r"C:\\Users\\7000qwq\\Desktop\\testimage\\de\\" + picpa
+    img = cv2.imread(path)
     frame = img  # frame是画了框的图 原图是img
     detect_res = face_detect(img)
     print("人脸检测：")
@@ -115,8 +140,6 @@ if mode == '1':
             if face['quality']['completeness'] == 1:     # 检测到的人脸质量正常   and face['quality']['blur'] <= 1
 
                 cut = cut_individual(face, img)
-                facenum = facenum + 1
-                cv2.imwrite('face_' + str(facenum) + '.jpg', cut)
                 user_id = face_find(cut)
                 if user_id != 0:  #  人脸库中有这张脸 需要框起来然后标注
 
@@ -128,5 +151,6 @@ if mode == '1':
                     cv2.waitKey()
                     cv2.destroyWindow('myPicture')
 
+    cv2.imwrite(picpa + "_face.jpg", frame)  # 保存图片
 
 
