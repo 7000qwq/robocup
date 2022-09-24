@@ -1,0 +1,2 @@
+datasets\helmet\images\val\19.jpg
+datasets\helmet\images\val\22.jpg

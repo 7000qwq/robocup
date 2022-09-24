@@ -1,21 +1,19 @@
 # encoding:utf-8
 
-import requests
 import base64
-import datetime
-import operator
-import os
-import cv2
 import math
-from PIL import Image
+import os
+
+import cv2
+import requests
+
 
 # client_id 为官网获取的AK， client_secret 为官网获取的SK
-host = 'https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=KuM5BbQrM9RppkwN5eyEKutg&client_secret=oW3KlZSpx5voOFg4p2BWNxjRy0lGNmEB'
-response = requests.get(host)
-if response:
-    print(response.json())
-    f_access_token = str(response.json()['access_token'])
-
+def get_token():
+    host = 'https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=' + f_client_id + '&client_secret=' + f_client_secret
+    response = requests.get(host)
+    if response:
+        return str(response.json()['access_token'])
 
 
 def cv2_base64(image):
@@ -159,15 +157,17 @@ for picpa in telist:
 
         else:
             for face in detect_res['result']['face_list']:
-                if face['quality']['completeness'] == 1:     # 检测到的人脸质量正常   and face['quality']['blur'] <= 1
+                if face['quality']['completeness'] == 1:  # 检测到的人脸质量正常   and face_module['quality']['blur'] <= 1
 
                     cut = cut_individual(face, img)
                     user_id = face_find(cut)
-                    if user_id != 0:  #  人脸库中有这张脸 需要框起来然后标注
+                    if user_id != 0:  # 人脸库中有这张脸 需要框起来然后标注
 
                         frame = piant_individual(face, frame)
                         #  frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                        cv2.putText(frame, str(user_id) + str(' ') + str(face['gender']['type']), (int(face['location']['left']), int(face['location']['top'])), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3)
+                        cv2.putText(frame, str(user_id) + str(' ') + str(face['gender']['type']),
+                                    (int(face['location']['left']), int(face['location']['top'])),
+                                    cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3)
                         cv2.namedWindow('myPicture', 0)
                         cv2.imshow('myPicture', frame)
                         cv2.waitKey()

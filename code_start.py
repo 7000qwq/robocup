@@ -1,8 +1,3 @@
-import cv2
-import os
-import requests
-
-import face_module as fm
 import os
 
 import cv2
@@ -36,7 +31,8 @@ class Robocup():
             self.origin_pics_list.append(cv2.imread('./origin_pics_list/' + path_origin_pic))  # 把每一张原图读到origin_pics列表中
 
     def detect_items(self):
-        return "Detection"
+        os.system(
+            'python ./yolov7-main-master/detect.py --weights yolov7.pt --conf 0.25 --source ./origin_pics/ --nosave False')
 
     def detect_faces(self):
         for i in range(len(self.origin_pics_list)):
@@ -50,16 +46,16 @@ class Robocup():
                               self.results_face_detect_list[i]))
 
     def save_results(self):
-        pass
+        for i in range(len(self.face_item_labelled_pics_list)):
+            cv2.imwrite('./results/' + str(i) + '.jpg', self.face_item_labelled_pics_list[i])
 
     def get_token(self):
         host = 'https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=KuM5BbQrM9RppkwN5eyEKutg&client_secret=oW3KlZSpx5voOFg4p2BWNxjRy0lGNmEB'
+
         response = requests.get(host)
         if response:
             print(response.json())
             return str(response.json()['access_token'])
-
-
 
 if __name__ == "__main__":
     robocup = Robocup()
