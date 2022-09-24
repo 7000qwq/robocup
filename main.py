@@ -7,6 +7,7 @@ import operator
 import os
 import cv2
 import math
+from PIL import Image
 
 # client_id 为官网获取的AK， client_secret 为官网获取的SK
 host = 'https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=KuM5BbQrM9RppkwN5eyEKutg&client_secret=oW3KlZSpx5voOFg4p2BWNxjRy0lGNmEB'
@@ -81,6 +82,15 @@ def cut_individual(individual, frame):
     height = math.floor(individual['location']['height'])
     width = math.floor(individual['location']['width'])
     left = math.floor(individual['location']['left'])
+
+
+    w = int(frame.shape[0])  # 截取长
+    h = int(frame.shape[1])  # 图片的高
+    top = max(0, top)
+    height = min(height, top + h)
+    left = max(0, left)
+    width = min(width, left + w)
+
     cut = frame[top:top+height, left:left+width]
     return cut
 
@@ -90,6 +100,14 @@ def piant_individual(individual, frame):
     height = math.floor(individual['location']['height'])
     width = math.floor(individual['location']['width'])
     left = math.floor(individual['location']['left'])
+
+    w = int(frame.shape[0])  # 截取长
+    h = int(frame.shape[1])  # 图片的高
+    top = max(0, top)
+    height = min(height, top + h)
+    left = max(0, left)
+    width = min(width, left + w)
+    
     frame = cv2.rectangle(frame, (left, top), (left + width, top + height), (0, 255, 255), 2)
     return frame
 
@@ -126,31 +144,33 @@ for picpa in relist:
 
 telist = getPhoto_two()
 for picpa in telist:
-    path = r"C:\\Users\\7000qwq\\Desktop\\testimage\\de\\" + picpa
-    img = cv2.imread(path)
-    frame = img  # frame是画了框的图 原图是img
-    detect_res = face_detect(img)
-    print("人脸检测：")
-    print( detect_res )
-    if detect_res['error_code'] != 0:
-        print(detect_res['error_msg'])
+    try:
+        path = r"C:\\Users\\7000qwq\\Desktop\\testimage\\de\\" + picpa
+        img = cv2.imread(path)
+        frame = img  # frame是画了框的图 原图是img
+        detect_res = face_detect(img)
+        print("人脸检测：")
+        print( detect_res )
+        if detect_res['error_code'] != 0:
+            print(detect_res['error_msg'])
 
-    else:
-        for face in detect_res['result']['face_list']:
-            if face['quality']['completeness'] == 1:     # 检测到的人脸质量正常   and face['quality']['blur'] <= 1
+        else:
+            for face in detect_res['result']['face_list']:
+                if face['quality']['completeness'] == 1:     # 检测到的人脸质量正常   and face['quality']['blur'] <= 1
 
-                cut = cut_individual(face, img)
-                user_id = face_find(cut)
-                if user_id != 0:  #  人脸库中有这张脸 需要框起来然后标注
+                    cut = cut_individual(face, img)
+                    user_id = face_find(cut)
+                    if user_id != 0:  #  人脸库中有这张脸 需要框起来然后标注
 
-                    frame = piant_individual(face, frame)
-                    #  frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                    cv2.putText(frame, str(user_id) + str(' ') + str(face['gender']['type']), (int(face['location']['left']), int(face['location']['top'])), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3)
-                    cv2.namedWindow('myPicture', 0)
-                    cv2.imshow('myPicture', frame)
-                    cv2.waitKey()
-                    cv2.destroyWindow('myPicture')
+                        frame = piant_individual(face, frame)
+                        #  frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                        cv2.putText(frame, str(user_id) + str(' ') + str(face['gender']['type']), (int(face['location']['left']), int(face['location']['top'])), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3)
+                        cv2.namedWindow('myPicture', 0)
+                        cv2.imshow('myPicture', frame)
+                        cv2.waitKey()
+                        cv2.destroyWindow('myPicture')
 
-    cv2.imwrite(picpa + "_face.jpg", frame)  # 保存图片
-
+        cv2.imwrite(picpa + "_face.jpg", frame)  # 保存图片
+    except:
+        continue
 
