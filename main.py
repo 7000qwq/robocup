@@ -101,7 +101,10 @@ def getPhoto_one():
     files_list = os.listdir(path_photo) # 得到文件夹下的所有文件名称，存在字符串列表中
     #
     print(files_list) # 打印path_photo文件夹下的所有文件
+    #
+
     return files_list
+
 
 def getPhoto_two():
     path_photo = 'C:/Users/7000qwq/Desktop/testimage/de' # 所有photo所在的文件夹目录
