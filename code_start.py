@@ -32,7 +32,7 @@ class Robocup():
 
     def detect_items(self):
         os.system(
-            'python ./yolov7-main-master/detect.py --weights yolov7.pt --conf 0.25 --source ./origin_pics/ --nosave False')
+            'python ./yolov7-main-master/detect.py')
 
     def detect_faces(self):
         for i in range(len(self.origin_pics_list)):
@@ -59,8 +59,8 @@ class Robocup():
 
 if __name__ == "__main__":
     robocup = Robocup()
-    robocup.register_face()
     robocup.read_pics()
+    robocup.register_face()
     robocup.detect_items()
     robocup.detect_faces()
     robocup.label_faces()

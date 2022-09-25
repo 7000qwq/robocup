@@ -110,13 +110,13 @@ def piant_individual(individual, frame):
 
 
 def face_label(origin_pic, item_labelled_pic, result):
-    if result['quality']['completeness'] == 1:  # 检测到的人脸质量正常
-        cut = cut_individual(result, origin_pic)
+    for face in result['result']['face_list']:
+        cut = cut_individual(face, origin_pic)
         user_id = face_find(cut)
         if user_id != 0:  # 人脸库中有这张脸 需要框起来然后标注
             frame = piant_individual(result, item_labelled_pic)
-            cv2.putText(frame, str(user_id) + str(' ') + str(result['gender']['type']),
-                        (int(result['location']['left']), int(result['location']['top'])),
+            cv2.putText(frame, str(user_id) + str(' ') + str(face['gender']['type']),
+                        (max(int(face['location']['left'], 0)), max(int(face['location']['top'], 0))),
                         cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3)
     return frame
 
